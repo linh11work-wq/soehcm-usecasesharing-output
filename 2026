@@ -1,0 +1,336 @@
+<title>SoE Use Case Sharing Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: sticky tab bar over a single 1100px column; each tab is a stack of dark glass panels on a deep green network ground */
+:root{
+  --bg-0:#05130F; --bg-1:#0D2A21;
+  --panel:rgba(20,54,43,.55); --panel-strong:rgba(26,68,54,.75);
+  --line:rgba(124,255,160,.14);
+  --mint:#7CFFA0; --mint-dim:#4FD67D;
+  --fg:#EEF6F0; --fg-2:#A9C2B5; --fg-3:#7C9A8B;
+  --font:"Google Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg-0)}
+body{margin:0;font-family:var(--font);color:var(--fg);font-size:15px;line-height:1.65;
+  background:radial-gradient(1200px 600px at 85% -10%,rgba(124,255,160,.10),transparent 60%),
+             linear-gradient(180deg,var(--bg-0),var(--bg-1) 70%,var(--bg-0));
+  background-color:var(--bg-0);min-height:100vh}
+#net{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;opacity:.5;z-index:0}
+.wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding-inline:20px;padding-block:28px 64px}
+header.top{display:flex;flex-direction:column;gap:6px;padding-block:8px 20px}
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mint)}
+h1{margin:0;font-size:clamp(28px,4.4vw,44px);line-height:1.12;font-weight:700;text-wrap:balance}
+.sub{color:var(--fg-2);max-width:62ch;margin:4px 0 0}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;overflow-x:auto;
+  padding:10px;margin-bottom:28px;background:rgba(5,19,15,.82);backdrop-filter:blur(10px);
+  border-radius:14px;scrollbar-width:none}
+nav.tabs::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;font:inherit;font-size:14px;font-weight:600;color:var(--fg-2);background:transparent;border:0;
+  padding:10px 16px;border-radius:10px;cursor:pointer;white-space:nowrap}
+.tab .n{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:8px;border-radius:6px;
+  background:rgba(238,246,240,.08);color:var(--fg-2);font-size:12px}
+.tab:hover{color:var(--fg)}
+.tab[aria-selected="true"]{background:var(--panel-strong);color:var(--fg)}
+.tab[aria-selected="true"] .n{background:var(--fg);color:#0D2A21}
+.tab:focus-visible,.btn:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+
+section.pane{display:flex;flex-direction:column;gap:20px}
+.panel{background:linear-gradient(160deg,var(--panel-strong),var(--panel));border-radius:18px;padding:26px;
+  box-shadow:0 10px 30px rgba(0,0,0,.25);min-width:0}
+.panel h2{margin:0 0 14px;font-size:20px;font-weight:700;display:flex;align-items:center;gap:12px;text-wrap:balance}
+.panel h3{margin:0 0 8px;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mint)}
+.badge{display:inline-grid;place-items:center;min-width:34px;height:34px;padding:0 8px;border-radius:9px;background:var(--fg);
+  color:#0D2A21;font-weight:700;font-size:14px}
+p{margin:0 0 10px}
+p:last-child{margin-bottom:0}
+.muted{color:var(--fg-2)}
+.small{font-size:13px;color:var(--fg-3)}
+ul.clean{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+ul.clean li::marker{color:var(--mint)}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}.panel{padding:20px}}
+
+/* quotes */
+.quote{margin:0;padding:14px 16px;border-radius:12px;background:rgba(5,19,15,.45);font-size:15px}
+.quote p{margin:0 0 6px;font-weight:500}
+.quote cite{font-style:normal;font-size:12.5px;color:var(--fg-3)}
+.quotes{display:flex;flex-direction:column;gap:10px}
+
+/* definition rows */
+.defs{display:grid;grid-template-columns:170px minmax(0,1fr);gap:0}
+.defs dt,.defs dd{padding:14px 0;border-top:1px solid var(--line);margin:0}
+.defs dt{font-weight:700;color:var(--mint);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding-right:16px}
+.defs dt:first-of-type,.defs dt:first-of-type + dd{border-top:0}
+@media (max-width:640px){.defs{grid-template-columns:1fr}.defs dt{padding-bottom:2px}.defs dd{border-top:0;padding-top:0}}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media (max-width:900px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:480px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.stat{background:rgba(5,19,15,.45);border-radius:14px;padding:16px}
+.stat b{display:block;font-size:30px;font-weight:700;line-height:1.1;color:var(--fg);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--fg-2)}
+.stat.hl b{color:var(--mint)}
+
+/* table */
+.tbl-wrap{overflow-x:auto;border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:720px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:12px 14px;vertical-align:top;border-top:1px solid var(--line)}
+thead th{border-top:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--mint);font-weight:700}
+td.num,th.num{text-align:right}
+tbody td:first-child{font-weight:700}
+tfoot td{font-weight:700;color:var(--mint);border-top:1px solid rgba(124,255,160,.35)}
+
+/* session detail */
+.sess-head{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:6px}
+.sess-head h2{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 18px}
+.chip{font-size:12.5px;font-weight:600;padding:5px 11px;border-radius:999px;background:rgba(124,255,160,.10);color:var(--mint)}
+.chip.plain{background:rgba(238,246,240,.07);color:var(--fg-2)}
+.cols2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+@media (max-width:800px){.cols2{grid-template-columns:1fr}}
+.fb-h{margin-top:22px!important}
+.cols2 > div{min-width:0}
+.takeaway{margin-top:18px;padding:14px 16px;border-radius:12px;background:rgba(124,255,160,.08);font-weight:600}
+.takeaway small{display:block;font-weight:600;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--mint);margin-bottom:4px}
+
+/* impact */
+.impact-top{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.impact-top .stat{flex:1 1 140px}
+.shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:640px){.shots{grid-template-columns:1fr}}
+.shots{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+figure.shot{margin:0;display:flex;flex-direction:column;gap:8px;min-width:0}
+.shot button{all:unset;cursor:zoom-in;display:block;border-radius:12px;overflow:hidden;background:rgba(5,19,15,.45);aspect-ratio:3/4;max-width:100%}
+.shot button:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.shot img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .25s}
+.shot button:hover img{transform:scale(1.03)}
+.shot figcaption{font-size:13px;color:var(--fg-2);line-height:1.5}
+.shot figcaption b{color:var(--fg);font-weight:600}
+.apply{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+@media (max-width:900px){.apply{grid-template-columns:1fr}}
+.apply .shot button{aspect-ratio:4/5}
+.apply .tag{font-size:11.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mint)}
+#lb{position:fixed;inset:0;z-index:50;background:rgba(3,10,8,.92);display:grid;place-items:center;padding:24px;cursor:zoom-out}
+#lb img{max-width:min(100%,900px);max-height:calc(100vh - 48px);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+#lb .x{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:16px;font:inherit;font-weight:700;color:var(--fg);background:rgba(238,246,240,.1);border:0;border-radius:10px;padding:8px 14px;cursor:pointer}
+.btn{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:14px;text-decoration:none;color:#0D2A21;background:var(--mint);
+  padding:11px 18px;border-radius:10px}
+.btn:hover{background:var(--fg)}
+.btn svg{width:16px;height:16px}
+.row-end{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-top:18px}
+.chain{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:center}
+.chain .arrow{color:var(--mint);font-size:22px;font-weight:700}
+@media (max-width:640px){.chain{grid-template-columns:1fr}.chain .arrow{transform:rotate(90deg);justify-self:center}}
+.note{font-size:12.5px;color:var(--fg-3);margin-top:14px}
+@media (prefers-reduced-motion:reduce){#net{display:none}}
+</style>
+
+<canvas id="net" aria-hidden="true"></canvas>
+<div class="wrap">
+  <header class="top">
+    <span class="eyebrow">SoE HCM · Project Report · 07–09/2026</span>
+    <h1>SoE Use Case Sharing</h1>
+    <p class="sub">Chuỗi 4 session chia sẻ use case AI Agent thực tế từ SoE HCM cho đội ngũ BC / BD / CD level Junior / Middle khu vực 3 miền.</p>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Nội dung report">
+    <button class="tab" role="tab" id="t-tong-quan" aria-controls="tong-quan" aria-selected="true"><span class="n">1</span>Tổng quan dự án</button>
+    <button class="tab" role="tab" id="t-session" aria-controls="session" aria-selected="false"><span class="n">2</span>Các session đã diễn ra</button>
+  </nav>
+
+  <!-- TAB 1 -->
+  <section class="pane" id="tong-quan" role="tabpanel" aria-labelledby="t-tong-quan">
+    <div class="panel">
+      <h3>Bối cảnh</h3>
+      <p>Trước khi dự án bắt đầu, SoE HCM có một vài buổi phỏng vấn ngắn với các bạn Junior Sales để hiểu các bạn đang tự tin và chưa tự tin tư vấn giải pháp nào. Thời điểm đó, AI Agent Version 2 vẫn còn là một giải pháp khá mới đối với các bạn, ngoài ra, vẫn chưa có team nào tiên phong trong câu chuyện chia sẻ nhiều hơn về phiên bản AI mới này.</p>
+      <p>Chính vì vậy, Team SoE, dưới sự dẫn dắt của SoE Leader là chị Hà Tăng, quyết định khởi xướng chuỗi chia sẻ lần này để phần nào hỗ trợ cho các bạn Sales, đặc biệt là Junior, được tiếp cận thêm thông tin quý giá từ sản phẩm mới và tự tin hơn khi đi gặp khách hàng.</p>
+      <div class="grid2" style="margin-top:14px">
+        <blockquote class="quote"><p>“Cái nào cũng tự tin, đừng có AI là được.”</p><cite>Phỏng vấn BC, 07/2026</cite></blockquote>
+        <blockquote class="quote"><p>“AI v2 chưa biết nhiều, nói thôi, chứ ko tin lắm, chưa hiểu tính năng.”</p><cite>Phỏng vấn BC, 07/2026</cite></blockquote>
+      </div>
+      <p class="muted" style="margin-top:14px">Khi gặp các bài toán mới hoặc chưa từng cọ xát, phần lớn các bạn sẽ cần tham vấn từ Leader, hoặc chọn book POD SoE vì chưa có use case thực tế, chưa biết cách áp dụng AI như thế nào để tự đề xuất giải pháp cho khách hàng.</p>
+    </div>
+
+    <div class="panel">
+      <dl class="defs">
+        <dt>Mục tiêu</dt>
+        <dd>
+          <ul class="clean">
+            <li>Chia sẻ các bài toán thực tế và cách giải quyết phổ biến theo từng use case hoặc theo ngành cho Junior / Middle Sales (BC/BD/CD).</li>
+            <li>Trang bị các bài toán phổ biến, thường gặp và cách giải đã được kiểm chứng, đặc biệt là các use case kết hợp với AI từ góc độ SoE, để Sales có góc nhìn, tự tin và chủ động hơn khi tư vấn cho khách hàng.</li>
+            <li>Các use case được chia sẻ không mang tính đại diện cho tất cả. Nền tảng cần có từ đội ngũ Sales là kiến thức về sản phẩm Base nói chung, để biết cách kết hợp với AI một cách hiệu quả và có khả năng tự ứng dụng.</li>
+          </ul>
+        </dd>
+        <dt>Đối tượng</dt>
+        <dd>Junior / Middle Sales (BC/BD/CD) khu vực 3 miền. Ban đầu dành cho Junior RC HCM, sau đó mở rộng sang RC Hà Nội, CO, CS và một số anh chị Senior.</dd>
+        <dt>Concept</dt>
+        <dd>Các buổi chia sẻ ngắn 60–75 phút, chia sẻ những use case thực tế mà SoE HCM đã trực tiếp showcase cho khách hàng, xoay quanh các trục sản phẩm của Base khi kết hợp với AI Agent.</dd>
+        <dt>Format</dt>
+        <dd>Kết hợp lý thuyết về AI Agent của Base, chia sẻ use case thực tế từ người trong cuộc, và hoạt động nhóm để trao đổi, tương tác.</dd>
+      </dl>
+    </div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section class="pane" id="session" role="tabpanel" aria-labelledby="t-session" hidden>
+    <div class="panel">
+      <h2>Tổng quan 4 session</h2>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Session</th><th>Ngày</th><th>Topic</th><th>Hình thức</th><th class="num">Online</th><th class="num">Offline</th><th class="num">Phản hồi</th><th class="num">Điểm TB</th></tr></thead>
+          <tbody>
+            <tr><td>SS1</td><td>23/07/2026</td><td>Base AI Agent Foundation</td><td>Lý thuyết + tương tác</td><td class="num">30+</td><td class="num">29</td><td class="num">12</td><td class="num">9.58</td></tr>
+            <tr><td>SS2</td><td>04/08/2026</td><td>Tool AI Agent + Use case xử lý văn bản nhà nước</td><td>Lý thuyết + Case sharing</td><td class="num">13</td><td class="num">18</td><td class="num">5</td><td class="num">9.8</td></tr>
+            <tr><td>SS3</td><td>10/09/2026</td><td>2 use case AI Chatbot: IT bot assistant, Trợ lý dự án</td><td>Case sharing + Demo trực tiếp</td><td class="num">48</td><td class="num">10</td><td class="num">4</td><td class="num">9.5</td></tr>
+            <tr><td>SS4</td><td>24/09/2026</td><td>Trợ lý tạo công việc tự động cho Wework và Service</td><td>Case sharing + Group activity</td><td class="num">17</td><td class="num">8</td><td class="num">5</td><td class="num">9.8</td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="4">Tổng cộng</td><td class="num">108+</td><td class="num">65</td><td class="num">26</td><td class="num">9.65</td></tr></tfoot>
+        </table>
+      </div>
+      <div style="margin-top:18px"><div class="stats">
+        <div class="stat"><b>4</b><span>session đã tổ chức</span></div>
+        <div class="stat"><b>108+</b><span>lượt tham gia online</span></div>
+        <div class="stat"><b>65</b><span>lượt tham gia offline</span></div>
+        <div class="stat"><b>26</b><span>phản hồi qua Feedback Form</span></div>
+        <div class="stat hl"><b>9.65</b><span>điểm trung bình / 10</span></div>
+      </div></div>
+    </div>
+
+    <div class="panel">
+      <h2>Từ buổi chia sẻ tới buổi gặp khách</h2>
+      <p class="muted" style="margin-bottom:18px">Người tham gia mang kiến thức từ các session vào công việc thật với khách hàng.</p>
+      <div class="apply">
+        <figure class="shot"><button type="button" data-full="img/SS1_05.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_05.jpg" alt="" loading="lazy"></button><figcaption><span class="tag">SS1 · Đề án cho khách</span><br><b>CD dùng khung 3 cấp độ AI Agent của SS1</b> làm slide “Base AI Agent: nhân sự số trong từng quy trình” trong đề án tái cấu trúc trình khách hàng Kim Thịnh.</figcaption></figure>
+        <figure class="shot"><button type="button" data-full="img/SS2_02.jpg" aria-label="Phóng to ảnh"><img src="img/SS2_02.jpg" alt="" loading="lazy"></button><figcaption><span class="tag">SS1 · Meeting với khách</span><br><b>“Em đã apply kiến thức buổi 1 để meeting vs khách và rất thành công nha.”</b> Người tham gia SS1, sau đó xin tiếp học liệu buổi 2.</figcaption></figure>
+        <figure class="shot"><button type="button" data-full="img/SS4_01.png" aria-label="Phóng to ảnh"><img src="img/SS4_01.png" alt="" loading="lazy"></button><figcaption><span class="tag">SS4 · Case khách thật</span><br><b>Một ngày sau SS4, BC mang case khách quản lý hạ tầng ngân hàng</b> tới nhờ SoE thẩm định, và đã tự đề xuất hướng kết hợp AI giao việc.</figcaption></figure>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Nội dung buổi sau đến từ câu hỏi của buổi trước</h2>
+      <p class="muted" style="margin-bottom:18px">Từ Session thứ 2 trở đi, team tiếp thu góp ý của người tham gia để xây dựng nội dung cho buổi tiếp theo.</p>
+      <div class="chain">
+        <blockquote class="quote"><p>“Tui cần usecase đọc task dự án để làm báo cáo ạ.”</p><cite>Quân · Feedback SS2</cite></blockquote>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="quote"><p>SS3 demo use case Trợ lý dự án: AI đọc task Wework và tự làm báo cáo.</p><cite>SS3 · 10/09/2026</cite></div>
+      </div>
+      <div class="chain" style="margin-top:12px">
+        <blockquote class="quote"><p>“Em muốn hỏi cách để nhận được các task từ email để đổ về và phân loại thành các task cụ thể…”</p><cite>Hà Phương Anh · Feedback SS2</cite></blockquote>
+        <span class="arrow" aria-hidden="true">→</span>
+        <div class="quote"><p>SS4 chia sẻ use case AI tách câu chữ tự do thành công việc có cấu trúc.</p><cite>SS4 · 24/09/2026</cite></div>
+      </div>
+    </div>
+
+    <article class="panel">
+      <div class="sess-head"><span class="badge">SS1</span><h2>Base AI Agent Foundation</h2></div>
+      <div class="chips"><span class="chip">Lý thuyết nền tảng</span><span class="chip plain">Kahoot warm-up</span><span class="chip plain">23/07/2026</span></div>
+      <div class="cols2">
+        <div><h3>Nội dung chính</h3><ul class="clean"><li>Kiến thức nền tảng về AI Agent Version 2 của Base và cấu trúc chính tạo nên một AI Agent: Context – Prompt, Knowledge, Model, Tool.</li><li>3 cấp độ tác vụ của AI Agent (Đọc &amp; Trích xuất, So sánh &amp; Đối chiếu, Phân tích &amp; Suy luận) cùng các ví dụ cụ thể trong vận hành doanh nghiệp.</li><li>Kinh nghiệm lựa chọn model phù hợp khi xây dựng AI Agent cho từng loại nghiệp vụ vận hành.</li></ul></div>
+        <div><h3>Hình thức</h3><p>Lý thuyết kết hợp với các ví dụ cụ thể. Mở đầu bằng một vòng Kahoot để warm-up và nắm mức độ hiểu biết chung của người tham gia về AI Agent của Base.</p></div>
+      </div>
+      <h3 class="fb-h">Phản hồi từ người tham gia</h3>
+      <div class="shots"><figure class="shot"><button type="button" data-full="img/SS1_01.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_01.jpg" alt="" loading="lazy"></button><figcaption>Một Middle BC xin slide ngay sáng hôm sau buổi chia sẻ.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS1_02.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_02.jpg" alt="" loading="lazy"></button><figcaption>Người tham gia chia sẻ lại slide <b>“3 cấp độ tư duy của AI Agent”</b>: “tâm đắc slide này nhứt”.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS1_04.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_04.jpg" alt="" loading="lazy"></button><figcaption><b>Xin record để học bù</b> sau khi nghe đồng nghiệp khen buổi chia sẻ.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS1_05.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_05.jpg" alt="" loading="lazy"></button><figcaption><b>Khung 3 cấp độ</b> được đưa vào đề án trình khách hàng Kim Thịnh.</figcaption></figure></div>
+      <h3 class="fb-h">Feedback tiêu biểu</h3>
+      <div class="grid3">
+        <blockquote class="quote"><p>“Hiểu đc để AI có thể thực hiện một nghiệp vụ, công việc thì điều kiện dữ liệu đầu vào cần có những gì.”</p><cite>Người tham gia SS1</cite></blockquote>
+        <blockquote class="quote"><p>“E wow với phần tạo job/ticket tự động vs tạo report đc từ Wework ạ.”</p><cite>Người tham gia SS1</cite></blockquote>
+        <blockquote class="quote"><p>“Buổi hôm nay em thấy nội dung ok và trình bày rất dễ hiểu ạ.”</p><cite>Người tham gia SS1</cite></blockquote>
+      </div>
+      <div class="row-end"><span class="small">Slide, tài liệu use case và record buổi chia sẻ</span>
+        <a class="btn" href="https://drive.google.com/drive/folders/1aiGgOURXLZu2TKO8KmBy41LXtKGoSTIL?usp=sharing" target="_blank" rel="noopener">Xem output SS1 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11L11 5M6 5h5v5"/></svg></a></div>
+    </article>
+
+    <article class="panel">
+      <div class="sess-head"><span class="badge">SS2</span><h2>Tool AI Agent + Use case xử lý văn bản nhà nước</h2></div>
+      <div class="chips"><span class="chip">Lý thuyết + Case sharing</span><span class="chip plain">04/08/2026</span></div>
+      <div class="cols2">
+        <div><h3>Nội dung chính</h3><ul class="clean"><li>Giải nghĩa 7 Tools mặc định và cách áp dụng cho các trường hợp thực tế, gồm xác định ngày giờ hiện tại, đọc nội dung website, lọc đúng thông tin theo mẫu (số điện thoại, số hiệu văn bản), tính toán, so sánh hai bản hợp đồng, lấy đúng thông tin cần dùng từ dữ liệu của hệ thống, và vẽ biểu đồ.</li><li><b>Custom tool (Công cụ tùy chỉnh):</b> Giải nghĩa chức năng và cách sử dụng của Custom tool, cánh tay nối dài của AI Agent đến các hệ thống phần mềm khác (không chỉ là Base) thông qua API.</li><li><b>Use case: Quy trình tiếp nhận, xử lý văn bản và giao việc tự động ở mô hình doanh nghiệp nhà nước:</b> Kết hợp 2 AI Agent trong việc xử lý văn bản (Base Service) và tự động giao việc (Base Wework) dựa trên bút phê. Số hóa thao tác thông dụng hàng ngày lên hệ thống gần như tự động.</li></ul></div>
+        <div><h3>Hình thức</h3><p>Lý thuyết kết hợp chia sẻ use case thực tế. Phần lý thuyết ngắn và đi thẳng vào ví dụ. Phần use case được chia sẻ từ chính bài toán đã trực tiếp tư vấn cho khách hàng (Tổng công ty thuốc lá Khánh Hòa - Khataco).</p></div>
+      </div>
+      <h3 class="fb-h">Phản hồi từ người tham gia</h3>
+      <div class="shots"><figure class="shot"><button type="button" data-full="img/SS2_01.png" aria-label="Phóng to ảnh"><img src="img/SS2_01.png" alt="" loading="lazy"></button><figcaption>Output SS2 (slide + record) được gửi lên group chung, kèm đề xuất <b>lập thư mục lưu tài liệu</b> để mọi người tiện xem lại.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS1_03.jpg" aria-label="Phóng to ảnh"><img src="img/SS1_03.jpg" alt="" loading="lazy"></button><figcaption>Người tham gia xin record buổi trước, và xin xem lại phần <b>AI trong quy trình văn bản đến/đi</b>.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS2_02.jpg" aria-label="Phóng to ảnh"><img src="img/SS2_02.jpg" alt="" loading="lazy"></button><figcaption><b>Xin học liệu buổi 2</b>, kèm chia sẻ đã áp dụng buổi 1 khi gặp khách.</figcaption></figure></div>
+      <h3 class="fb-h">Feedback tiêu biểu</h3>
+      <div class="grid3">
+        <blockquote class="quote"><p>“Tuỵt vừi ạ, buổi nào cũng tuỵt như thé.”</p><cite>Linh Lâm</cite></blockquote>
+        <blockquote class="quote"><p>“Tui cần usecase đọc task dự án để làm báo cáo ạ.”</p><cite>Quân</cite></blockquote>
+        <blockquote class="quote"><p>“Quá đỉnhh.”</p><cite>Vân Nguyễn 03</cite></blockquote>
+      </div>
+      <div class="row-end"><span class="small">Slide, tài liệu tool và record buổi chia sẻ</span>
+        <a class="btn" href="https://drive.google.com/drive/folders/1XBktXq4Hv3Wr8Nbdi2X4s0Iga4yxN7fV?usp=sharing" target="_blank" rel="noopener">Xem output SS2 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11L11 5M6 5h5v5"/></svg></a></div>
+    </article>
+
+    <article class="panel">
+      <div class="sess-head"><span class="badge">SS3</span><h2>2 use case AI Chatbot</h2></div>
+      <div class="chips"><span class="chip">Case sharing + Demo trực tiếp</span><span class="chip plain">IT bot assistant</span><span class="chip plain">Trợ lý dự án</span><span class="chip plain">10/09/2026</span></div>
+      <div class="cols2">
+        <div><h3>Nội dung chính</h3><ul class="clean"><li><b>Use case: IT bot assistant – Tiếp nhận và tạo phiếu yêu cầu hỗ trợ IT qua hội thoại:</b> Nhân viên chỉ cần nhắn tin mô tả sự cố, AI Agent hỏi thêm thông tin cần thiết, soạn sẵn phiếu và tạo ticket trên Base Service đúng bộ phận, đúng mức độ ưu tiên sau khi người dùng xác nhận. Không cần mở biểu mẫu, không cần điền tay.</li><li><b>Use case: Trợ lý dự án – Tự động tổng hợp báo cáo công việc trong dự án:</b> AI Agent đọc toàn bộ công việc của dự án trên Base Wework, kể cả các trường thông tin tùy chỉnh (ví dụ loại thiết bị), tự xác định kỳ báo cáo và tạo báo cáo theo đúng nhu cầu quản lý: số việc cần làm, số việc trễ hạn, danh sách thiết bị cần sửa theo từng loại.</li><li><b>Giới hạn của AI Agent:</b> Chỉ ra những yêu cầu AI Agent chưa thực hiện được khi chưa được trang bị Tool phù hợp, giúp Sales tư vấn đúng phạm vi và tránh hứa vượt khả năng của hệ thống.</li></ul></div>
+        <div><h3>Hình thức</h3><p>Chia sẻ use case thực tế kết hợp demo trực tiếp. Hai AI Agent được trình diễn live trên hệ thống bởi chính thành viên SoE đã xây dựng và showcase cho khách hàng.</p></div>
+      </div>
+      <h3 class="fb-h">Phản hồi từ người tham gia</h3>
+      <div class="shots"><figure class="shot"><button type="button" data-full="img/SS3_02.png" aria-label="Phóng to ảnh"><img src="img/SS3_02.png" alt="" loading="lazy"></button><figcaption>Người tham gia xin thêm link record sau SS3.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS3_01.png" aria-label="Phóng to ảnh"><img src="img/SS3_01.png" alt="" loading="lazy"></button><figcaption>Người tham gia hỏi link record sau khi làm feedback form.</figcaption></figure><figure class="shot"><button type="button" data-full="img/SS3_03.jpg" aria-label="Phóng to ảnh"><img src="img/SS3_03.jpg" alt="" loading="lazy"></button><figcaption>Người tham gia mong muốn được tham gia online mặc dù đang đi công tác.</figcaption></figure></div>
+      <h3 class="fb-h">Feedback tiêu biểu</h3>
+      <div class="grid3">
+        <blockquote class="quote"><p>“Cứ có api là tạo đc công cụ tự động hoá, nghĩ tới mà e thấy nó ảo diệu khi kết hợp đc nhiều công cụ với nhauu.”</p><cite>huyenle02</cite></blockquote>
+        <blockquote class="quote"><p>“Tuỵt vời ạ, nội dung quá bổ ích ạ.”</p><cite>Linhlam</cite></blockquote>
+        <blockquote class="quote"><p>“Xịn ạ.”</p><cite>Vinh CS</cite></blockquote>
+      </div>
+      <div class="row-end"><span class="small">Record buổi demo và tài liệu Base AI</span>
+        <a class="btn" href="https://drive.google.com/drive/folders/18vOHM65qhEpv3_IImq-eraq9NR42i-1r?usp=sharing" target="_blank" rel="noopener">Xem output SS3 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11L11 5M6 5h5v5"/></svg></a></div>
+    </article>
+
+    <article class="panel">
+      <div class="sess-head"><span class="badge">SS4</span><h2>Trợ lý tạo công việc tự động cho Wework và Service</h2></div>
+      <div class="chips"><span class="chip">Case sharing + Group activity</span><span class="chip plain">24/09/2026</span></div>
+      <div class="cols2">
+        <div><h3>Nội dung chính</h3><ul class="clean"><li><b>Use case: Tự động tạo và giao việc theo đơn hàng cho doanh nghiệp dịch vụ kiểm định, hiệu chuẩn thiết bị:</b> Trưởng nhóm chỉ cần gõ một câu giao việc tự nhiên, AI Agent tự tách thành danh sách công việc theo đúng cấu trúc Đơn hàng – Nhân viên – Công việc – Thời hạn, hệ thống tự tạo từng công việc và liên kết về đúng đơn hàng gốc. Rút ngắn 2–3 tiếng tạo việc thủ công mỗi ngày của trưởng nhóm.</li><li><b>Tiêu chí nhận diện bài toán cần AI:</b> Giải nghĩa khi nào nên kết hợp AI Agent (yêu cầu giao việc được viết tự do, thay đổi theo từng lần, cần liên kết về hồ sơ gốc) và khi nào tính năng có sẵn của Base Service đã đủ đáp ứng.</li><li><b>Hoạt động nhóm:</b> Thiết kế giải pháp cho bài toán giao việc của khách hàng M&amp;M (11 máy cần hiệu chỉnh, 4 nhân viên phụ trách), đáp ứng 4 tiêu chí: rút ngắn thời gian, tự động, liên kết với đơn hàng, xuất được báo cáo.</li></ul></div>
+        <div><h3>Hình thức</h3><p>Chia sẻ use case thực tế kết hợp hoạt động nhóm. Phần use case được chia sẻ từ chính bài toán đã trực tiếp tư vấn cho khách hàng (Khởi Toàn). Sau đó các nhóm 3 người cùng thiết kế giải pháp trên whiteboard và trình bày trước cả phòng.</p></div>
+      </div>
+      <h3 class="fb-h">Phản hồi từ người tham gia</h3>
+      <div class="shots"><figure class="shot"><button type="button" data-full="img/SS4_01.png" aria-label="Phóng to ảnh"><img src="img/SS4_01.png" alt="" loading="lazy"></button><figcaption>BC mang <b>case khách thật</b> tới nhờ SoE thẩm định ngay ngày hôm sau.</figcaption></figure></div>
+      <h3 class="fb-h">Feedback tiêu biểu</h3>
+      <div class="grid3">
+        <blockquote class="quote"><p>“Giúp em hiểu rõ hơn khả năng ứng dụng của AI vào trong vận hành và từng usecase cụ thể. Tự tin hơn để bán ạ.”</p><cite>Lan Nguyễn 04</cite></blockquote>
+        <blockquote class="quote"><p>“Ước gì 1 tuần SoE có 2 bủi training.”</p><cite>Hatran03</cite></blockquote>
+        <blockquote class="quote"><p>“Các buổi sharing của team rất hay và nhiều insight.”</p><cite>Phong Phan</cite></blockquote>
+      </div>
+      <div class="row-end"><span class="small">Slide, đề bài group activity và record buổi chia sẻ</span>
+        <a class="btn" href="https://drive.google.com/drive/folders/1Y1Ub5lgHh_61kAtl__KizEXBRNDA4xSQ?usp=sharing" target="_blank" rel="noopener">Xem output SS4 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 11L11 5M6 5h5v5"/></svg></a></div>
+    </article>
+  </section>
+</div>
+
+<div id="lb" hidden><button class="x" type="button">Đóng</button><img alt=""></div>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('.tab'));
+  var ids=['tong-quan','session'];
+  function show(id){
+    if(ids.indexOf(id)<0) id='tong-quan';
+    tabs.forEach(function(t){var on=t.getAttribute('aria-controls')===id;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;});
+    ids.forEach(function(p){document.getElementById(p).hidden=(p!==id);});
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click',function(){var id=t.getAttribute('aria-controls');show(id);try{history.replaceState(null,'','#'+id)}catch(e){}window.scrollTo({top:0});});
+    t.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowLeft'){var n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length];n.focus();n.click();}});
+  });
+  show((location.hash||'').slice(1));
+  var lbox=document.getElementById('lb'),lbi=lbox.querySelector('img');
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-full]');if(b){lbi.src=b.getAttribute('data-full');lbox.hidden=false;return;}if(!lbox.hidden&&e.target.closest('#lb')){lbox.hidden=true;}});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')lbox.hidden=true;});
+
+  var c=document.getElementById('net');if(!c||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  var x=c.getContext('2d'),pts=[],W,H;
+  function size(){W=c.width=innerWidth;H=c.height=innerHeight;pts=[];var n=Math.min(70,Math.floor(W*H/22000));for(var i=0;i<n;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25});}
+  function draw(){x.clearRect(0,0,W,H);for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+    x.fillStyle='rgba(124,255,160,.55)';x.beginPath();x.arc(p.x,p.y,1.4,0,6.3);x.fill();
+    for(var j=i+1;j<pts.length;j++){var q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);if(d<130){x.strokeStyle='rgba(124,255,160,'+(.12*(1-d/130))+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();}}}
+    requestAnimationFrame(draw);}
+  size();addEventListener('resize',size);draw();
+})();
+</script>
